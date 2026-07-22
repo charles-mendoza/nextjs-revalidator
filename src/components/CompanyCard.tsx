@@ -234,13 +234,13 @@ export const CompanyCard: React.FC<CompanyCardProps> = ({
                     </div> */}
                   </div>
 
-                  <div className="flex items-center gap-2 group">
-                    <span className="font-mono text-xs text-zinc-500">{site.url}</span>
+                  <div className="flex items-center gap-2 group min-w-0">
+                    <span className="font-mono text-xs text-zinc-500 truncate min-w-0">{site.url}</span>
                     <a
                       href={site.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="opacity-0 group-hover:opacity-100 text-indigo-400 hover:text-indigo-300 transition-opacity"
+                      className="flex-shrink-0 text-indigo-400 hover:text-indigo-300 transition-opacity opacity-100 sm:opacity-0 sm:group-hover:opacity-100"
                     >
                       <ExternalLink className="w-3 h-3" />
                     </a>

@@ -319,7 +319,7 @@ export function Dashboard() {
   }, [companies, searchQuery, envFilter, channelFilter]);
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-zinc-100 flex flex-col font-sans selection:bg-indigo-500/30 selection:text-indigo-200">
+    <div className="min-h-screen overflow-x-hidden bg-[#09090b] text-zinc-100 flex flex-col font-sans selection:bg-indigo-500/30 selection:text-indigo-200">
       {toast && (
         <div className="fixed bottom-5 right-5 z-50 flex items-center gap-2.5 px-4 py-3 rounded-lg bg-zinc-900 border border-zinc-800 shadow-2xl text-xs font-medium animate-slide-up">
           {toast.type === 'success' && <CheckCircle2 className="w-4 h-4 text-indigo-400" />}
