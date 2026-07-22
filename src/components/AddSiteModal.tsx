@@ -105,7 +105,7 @@ export const AddSiteModal: React.FC<AddSiteModalProps> = ({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-5 space-y-4">
+        <form onSubmit={handleSubmit} className="p-5 space-y-4" autoComplete="off">
           {errorMsg && (
             <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-xs text-red-400 font-medium">
               {errorMsg}
@@ -158,7 +158,9 @@ export const AddSiteModal: React.FC<AddSiteModalProps> = ({
             <input
               type="password"
               required
-              placeholder="xxxxxxxxxxxxxxxxxx"
+              name="revalidate-secret"
+              autoComplete="new-password"
+              placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
               value={secret}
               onChange={(e) => setSecret(e.target.value)}
               className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3.5 py-2.5 text-sm text-zinc-100 font-mono placeholder-zinc-600 focus:outline-none focus:border-indigo-500 transition-colors"
