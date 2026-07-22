@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   DEFAULT_REVALIDATE_PAYLOAD,
   PublicCompanyGroup,
@@ -104,6 +104,8 @@ export function Dashboard() {
   const [channelFilter, setChannelFilter] = useState<string>('all');
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [username, setUsername] = useState<string>('');
+  // ms-epoch expiry of the current session; drives the client-side auto-logout timer.
+  const [sessionExpiresAt, setSessionExpiresAt] = useState<number | null>(null);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
   const [authError, setAuthError] = useState<string>('');
   const [isAddModalOpen, setIsAddModalOpen] = useState<boolean>(false);
@@ -130,6 +132,7 @@ export function Dashboard() {
       if (res.ok && data.success) {
         setIsAuthenticated(true);
         setUsername(data.username || u);
+        setSessionExpiresAt(data.expiresAt ?? null);
         setIsAuthModalOpen(false);
         setAuthError('');
         showToast(`Login successful! Welcome, ${data.username || u}`, 'success');
@@ -155,6 +158,7 @@ export function Dashboard() {
         if (data.authenticated) {
           setIsAuthenticated(true);
           setUsername(data.username || '');
+          setSessionExpiresAt(data.expiresAt ?? null);
           fetchSites();
         } else {
           setIsLoadingSites(false);
@@ -181,6 +185,7 @@ export function Dashboard() {
         setCompanies(data.sites || []);
       } else if (res.status === 401) {
         setIsAuthenticated(false);
+        setSessionExpiresAt(null);
         setIsAuthModalOpen(true);
       }
     } catch (e) {
@@ -190,8 +195,9 @@ export function Dashboard() {
     }
   };
 
-  // Log out and return to the login screen (so a different user can sign in).
-  const handleLogout = async () => {
+  // Clear the server cookie + all client auth state and return to the login screen.
+  // Silent: no toast/warning. Reused by both manual logout and the auto-logout timer.
+  const autoLogout = useCallback(async () => {
     try {
       await fetch('/api/logout', { method: 'POST' });
     } catch {
@@ -199,11 +205,33 @@ export function Dashboard() {
     }
     setIsAuthenticated(false);
     setUsername('');
+    setSessionExpiresAt(null);
     setCompanies([]);
     setSearchQuery('');
     setIsAuthModalOpen(true);
+  }, []);
+
+  // Manual logout (so a different user can sign in) — same as auto-logout, with a toast.
+  const handleLogout = async () => {
+    await autoLogout();
     showToast('Signed out', 'info');
   };
+
+  // Client-side expiry timer: silently auto-logs-out the moment the session token
+  // expires, without any advance warning. Re-armed whenever the expiry changes.
+  useEffect(() => {
+    if (!isAuthenticated || sessionExpiresAt == null) return;
+    const msUntilExpiry = sessionExpiresAt - Date.now();
+    if (msUntilExpiry <= 0) {
+      autoLogout();
+      return;
+    }
+    // setTimeout delays are clamped to a 32-bit signed int (~24.8 days); the session
+    // max-age is far below this, but cap defensively so a huge value can't overflow.
+    const delay = Math.min(msUntilExpiry, 2_147_483_647);
+    const id = setTimeout(autoLogout, delay);
+    return () => clearTimeout(id);
+  }, [isAuthenticated, sessionExpiresAt, autoLogout]);
 
   // Hybrid revalidation, routed by `mode`:
   //  - 'auto'   → by channel (preview → client-side, live → server-side)

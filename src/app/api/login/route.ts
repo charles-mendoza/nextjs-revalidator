@@ -4,6 +4,7 @@ import { isAuthConfigured, verifyUser } from '@/lib/auth';
 import {
   SESSION_COOKIE,
   createSessionToken,
+  readSessionToken,
   sessionCookieOptions,
 } from '@/lib/session-token';
 
@@ -32,5 +33,10 @@ export async function POST(req: Request) {
   const cookieStore = await cookies();
   cookieStore.set(SESSION_COOKIE, token, sessionCookieOptions());
 
-  return NextResponse.json({ success: true, username: user.username });
+  const payload = await readSessionToken(token);
+  return NextResponse.json({
+    success: true,
+    username: user.username,
+    expiresAt: payload?.exp ?? null, // ms epoch; client schedules auto-logout on this
+  });
 }

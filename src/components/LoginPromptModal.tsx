@@ -27,7 +27,10 @@ export const LoginPromptModal: React.FC<LoginPromptModalProps> = ({
     setIsSubmitting(true);
     try {
       const success = await onLogin(username, password);
-      if (!success) {
+      if (success) {
+        setUsername('');
+        setPassword('');
+      } else {
         setLocalError('Invalid username or password.');
       }
     } catch (err: any) {
