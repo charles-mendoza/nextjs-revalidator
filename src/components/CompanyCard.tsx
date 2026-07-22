@@ -97,6 +97,12 @@ export const CompanyCard: React.FC<CompanyCardProps> = ({
   };
 
   const handleRevalidateAll = async () => {
+    const count = company.sites.length;
+    const confirmed = window.confirm(
+      `Revalidate all ${count} ${count === 1 ? 'environment' : 'environments'} for "${company.name}"?\n\nThis will trigger a revalidation request to each one.`
+    );
+    if (!confirmed) return;
+
     setIsRevalidatingAll(true);
     for (const site of company.sites) {
       await handleRevalidateSingle(site);
