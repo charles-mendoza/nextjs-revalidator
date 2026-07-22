@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   DEFAULT_REVALIDATE_PAYLOAD,
   PublicSiteEntry,
@@ -54,6 +54,33 @@ const MODE_LABEL: Record<RevalidateMode, string> = {
 const isDefaultPayload = (p: RevalidatePayload): boolean =>
   p?.all === true && Object.keys(p).length === 1;
 
+// Per-site revalidation preferences (mode + payload) are persisted to the
+// browser's localStorage ONLY — they never touch the server. Keyed by siteId.
+const MODE_STORAGE_KEY = 'revalidator.modeBySite';
+const PAYLOAD_STORAGE_KEY = 'revalidator.payloadBySite';
+
+function loadStoredMap<T>(key: string): Record<string, T> {
+  if (typeof window === 'undefined') return {};
+  try {
+    const raw = window.localStorage.getItem(key);
+    return raw ? (JSON.parse(raw) as Record<string, T>) : {};
+  } catch {
+    return {};
+  }
+}
+
+function persistStoredEntry<T>(key: string, id: string, value: T): void {
+  if (typeof window === 'undefined') return;
+  try {
+    const raw = window.localStorage.getItem(key);
+    const map = raw ? (JSON.parse(raw) as Record<string, T>) : {};
+    map[id] = value;
+    window.localStorage.setItem(key, JSON.stringify(map));
+  } catch {
+    // ignore quota / serialization / privacy-mode errors
+  }
+}
+
 export const CompanyCard: React.FC<CompanyCardProps> = ({
   company,
   onRevalidateSite,
@@ -73,6 +100,23 @@ export const CompanyCard: React.FC<CompanyCardProps> = ({
   const modeFor = (siteId: string): RevalidateMode => modeBySite[siteId] ?? 'auto';
   const payloadFor = (siteId: string): RevalidatePayload =>
     bodyBySite[siteId] ?? DEFAULT_REVALIDATE_PAYLOAD;
+
+  // Hydrate saved preferences from localStorage after mount (avoids an
+  // SSR/hydration mismatch — first client render matches the server's empty state).
+  useEffect(() => {
+    setModeBySite(loadStoredMap<RevalidateMode>(MODE_STORAGE_KEY));
+    setBodyBySite(loadStoredMap<RevalidatePayload>(PAYLOAD_STORAGE_KEY));
+  }, []);
+
+  const selectMode = (siteId: string, mode: RevalidateMode) => {
+    setModeBySite((prev) => ({ ...prev, [siteId]: mode }));
+    persistStoredEntry(MODE_STORAGE_KEY, siteId, mode);
+  };
+
+  const savePayload = (siteId: string, payload: RevalidatePayload) => {
+    setBodyBySite((prev) => ({ ...prev, [siteId]: payload }));
+    persistStoredEntry(PAYLOAD_STORAGE_KEY, siteId, payload);
+  };
 
   const handleRevalidateSingle = async (site: PublicSiteEntry) => {
     setLoadingSites((prev) => ({ ...prev, [site.id]: true }));
@@ -309,6 +353,10 @@ export const CompanyCard: React.FC<CompanyCardProps> = ({
                       </button>
                     </div>
 
+                    {modeFor(site.id) !== 'auto' && (
+                      <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-indigo-400 border border-[#09090b] pointer-events-none" />
+                    )}
+
                     {openMenuSiteId === site.id && (
                       <>
                         {/* click-away backdrop */}
@@ -325,7 +373,7 @@ export const CompanyCard: React.FC<CompanyCardProps> = ({
                                 role="menuitemradio"
                                 aria-checked={active}
                                 onClick={() => {
-                                  setModeBySite((prev) => ({ ...prev, [site.id]: opt.value }));
+                                  selectMode(site.id, opt.value);
                                   setOpenMenuSiteId(null);
                                 }}
                                 className="w-full flex items-start justify-between gap-2 px-3 py-2 text-left hover:bg-zinc-800 transition-colors cursor-pointer"
@@ -442,9 +490,7 @@ export const CompanyCard: React.FC<CompanyCardProps> = ({
               siteLabel={`${company.name} · ${site.environment}/${site.channel} — ${site.url}`}
               initialPayload={payloadFor(site.id)}
               onClose={() => setEditingPayloadFor(null)}
-              onSave={(payload) =>
-                setBodyBySite((prev) => ({ ...prev, [site.id]: payload }))
-              }
+              onSave={(payload) => savePayload(site.id, payload)}
             />
           );
         })()}
