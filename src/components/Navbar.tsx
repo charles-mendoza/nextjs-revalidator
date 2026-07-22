@@ -52,7 +52,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs px-4 py-2 rounded-lg transition-colors shadow-lg shadow-indigo-900/20 active:scale-95 cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>Add Site</span>
+            <span className="hidden sm:inline">Add site</span>
           </button>
 
           {isAuthenticated && (

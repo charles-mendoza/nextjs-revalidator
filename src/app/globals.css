@@ -47,4 +47,7 @@
 body {
   background-color: #09090b;
   color: #f4f4f5;
+  /* Guard against horizontal scroll on mobile without creating a scroll
+     container that would break the sticky header's position: sticky. */
+  overflow-x: hidden;
 }
