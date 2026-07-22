@@ -312,10 +312,10 @@ export function Dashboard() {
             site.channel.toLowerCase().includes(q)
           );
         });
-        if (matchesCompanyName && !q) return company;
         return { ...company, sites: matchingSites };
       })
-      .filter((company) => company.sites && company.sites.length > 0);
+      .filter((company) => company.sites && company.sites.length > 0)
+      .sort((a, b) => a.name.localeCompare(b.name));
   }, [companies, searchQuery, envFilter, channelFilter]);
 
   return (
@@ -451,19 +451,21 @@ export function Dashboard() {
                     : 'No websites registered yet. Click "Add New Site" to create one.'}
                 </p>
               </div>
-              <button
-                onClick={() => {
-                  setSearchQuery('');
-                  setEnvFilter('all');
-                  setChannelFilter('all');
-                  setPrefilledCompany('');
-                  setIsAddModalOpen(true);
-                }}
-                className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 px-4 py-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Add First Site</span>
-              </button>
+              {totalSitesCount === 0 && (
+                <button
+                  onClick={() => {
+                    setSearchQuery('');
+                    setEnvFilter('all');
+                    setChannelFilter('all');
+                    setPrefilledCompany('');
+                    setIsAddModalOpen(true);
+                  }}
+                  className="inline-flex items-center gap-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 px-4 py-2 rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Add First Site</span>
+                </button>
+              )}
             </div>
           ) : (
             <div className="space-y-6">
