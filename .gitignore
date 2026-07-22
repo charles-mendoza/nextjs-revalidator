@@ -1,0 +1,18 @@
+node_modules/
+build/
+dist/
+coverage/
+.DS_Store
+*.log
+
+# Next.js
+.next/
+next-env.d.ts
+out/
+*.tsbuildinfo
+
+# env
+.env*
+!.env.example
+
+CLAUDE.md

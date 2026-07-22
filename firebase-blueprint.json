@@ -1,0 +1,52 @@
+{
+  "$comment": "Intended Firebase layout for nextjs-revalidator. Auth = Firebase Authentication (email/password); site data = Firestore, scoped per user by Auth UID. Secrets live only in Firestore and are never sent to the browser (except on-demand for preview-channel sites).",
+  "auth": {
+    "provider": "firebase-authentication",
+    "method": "email/password",
+    "notes": "Users are created in the Firebase console (Authentication tab). There is no in-app self-registration. Passwords are verified server-side via the Identity Toolkit REST API using FIREBASE_API_KEY."
+  },
+  "entities": {
+    "company": {
+      "title": "Company",
+      "description": "A brand grouping site environments, owned by a single user.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Company / brand name (e.g. Acme)"
+        },
+        "sites": {
+          "type": "array",
+          "description": "SiteEntry objects. Each includes the server-only `secret` plus url, environment, channel, and optional last* revalidation status fields.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "url": { "type": "string" },
+              "secret": { "type": "string", "description": "Bearer token. NEVER returned to the browser via the site list." },
+              "environment": { "type": "string", "description": "dev | uat | prod | custom" },
+              "channel": { "type": "string", "description": "preview (internal/client-side) | live (public/server-side)" },
+              "lastOk": { "type": "boolean" },
+              "lastStatus": { "type": "number" },
+              "lastStatusText": { "type": "string" },
+              "lastDurationMs": { "type": "number" },
+              "lastResponseSnippet": { "type": "string" },
+              "lastRevalidatedAt": { "type": "string" }
+            },
+            "required": ["id", "url", "secret", "environment", "channel"]
+          }
+        }
+      },
+      "required": ["name", "sites"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/companies/{companyId}": {
+      "schema": "company",
+      "description": "Per-user company site groups. {userId} is the Firebase Auth UID. Written only by the server (Admin SDK)."
+    }
+  },
+  "security": {
+    "rules": "Because all reads/writes go through the server using the Admin SDK (which bypasses security rules), lock client access down. Recommended rules deny all client access: `match /{document=**} { allow read, write: if false; }`. The app never uses the Firebase client SDK for Firestore."
+  }
+}
