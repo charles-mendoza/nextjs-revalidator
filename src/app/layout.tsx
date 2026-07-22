@@ -3,10 +3,10 @@ import './globals.css';
 import { ServiceWorkerRegister } from '@/components/ServiceWorkerRegister';
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.APP_URL ?? 'http://localhost:3000'),
   applicationName: 'nextjs-revalidator',
   title: 'nextjs-revalidator',
-  description:
-    'A dark-themed Next.js site revalidation dashboard with server-side POST revalidation, environment grouping, and internal login auth.',
+  description: 'A dashboard web app for triggering on-demand Next.js cache revalidation.',
   manifest: '/manifest.webmanifest',
   appleWebApp: {
     capable: true,
@@ -20,6 +20,17 @@ export const metadata: Metadata = {
     ],
     shortcut: '/favicon.ico',
     apple: '/apple-touch-icon.png',
+  },
+  openGraph: {
+    type: 'website',
+    title: 'nextjs-revalidator',
+    description: 'A dashboard web app for triggering on-demand Next.js cache revalidation.',
+    siteName: 'nextjs-revalidator',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'nextjs-revalidator',
+    description: 'A dashboard web app for triggering on-demand Next.js cache revalidation.',
   },
 };
 
