@@ -86,7 +86,10 @@ export const AddSiteModal: React.FC<AddSiteModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm animate-fade-in" onClick={onClose}>
-      <div className="bg-[#09090b] border border-zinc-800 w-full max-w-lg rounded-xl shadow-2xl overflow-hidden flex flex-col">
+      <div
+        className="bg-[#09090b] border border-zinc-800 w-full max-w-lg rounded-xl shadow-2xl overflow-hidden flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="p-5 border-b border-zinc-800 flex items-center justify-between bg-zinc-900/50">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
