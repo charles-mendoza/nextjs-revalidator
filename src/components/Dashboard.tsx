@@ -294,6 +294,9 @@ export function Dashboard() {
   };
 
   const handleDeleteSite = async (companyId: string, siteId: string) => {
+    if (!window.confirm('Are you sure you want to remove this site environment?')) {
+      return;
+    }
     const res = await fetch(`/api/sites/${companyId}/${siteId}`, { method: 'DELETE' });
     if (res.ok) {
       const data = await res.json();
