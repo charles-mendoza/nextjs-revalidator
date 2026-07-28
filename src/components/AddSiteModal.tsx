@@ -146,7 +146,7 @@ export const AddSiteModal: React.FC<AddSiteModalProps> = ({
               type="password"
               required
               name="revalidate-secret"
-              // autoComplete="new-password"
+              autoComplete="new-password"
               placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
               value={secret}
               onChange={(e) => setSecret(e.target.value)}
