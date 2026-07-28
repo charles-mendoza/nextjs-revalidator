@@ -306,7 +306,7 @@ export function Dashboard() {
   };
 
   const handleDeleteCompany = async (companyId: string) => {
-    if (!window.confirm('Are you sure you want to delete this company and all its environments?')) {
+    if (!window.confirm('Are you sure you want to delete this collection and all its environments?')) {
       return;
     }
     const res = await fetch(`/api/sites/${companyId}`, { method: 'DELETE' });
@@ -459,7 +459,7 @@ export function Dashboard() {
           <div className="flex items-center justify-between">
             <h3 className="text-xs font-mono font-semibold text-zinc-400 uppercase tracking-wider flex items-center gap-2">
               <Layers className="w-4 h-4 text-indigo-400" />
-              Registered Sites ({filteredCompanies.length})
+              Collections ({filteredCompanies.length})
             </h3>
             {/* <span className="text-xs text-zinc-500 font-mono">High density node grouping</span> */}
           </div>

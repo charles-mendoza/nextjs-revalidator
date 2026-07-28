@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { X, Braces, RotateCcw } from 'lucide-react';
+import { Braces, RotateCcw } from 'lucide-react';
 import { DEFAULT_REVALIDATE_PAYLOAD, RevalidatePayload } from '@/types';
+import { Modal, ModalHeader } from './Modal';
 
 interface RevalidatePayloadModalProps {
   isOpen: boolean;
@@ -135,28 +136,13 @@ export const RevalidatePayloadModal: React.FC<RevalidatePayloadModalProps> = ({
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm animate-fade-in" onClick={onClose}>
-      <div
-        className="bg-[#09090b] border border-zinc-800 w-full max-w-lg rounded-xl shadow-2xl overflow-hidden flex flex-col"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="p-5 border-b border-zinc-800 flex items-center justify-between bg-zinc-900/50">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
-              <Braces className="w-4 h-4" />
-            </div>
-            <div>
-              <h3 className="text-base font-bold text-white">Revalidation Payload</h3>
-              <p className="text-xs text-zinc-400 truncate max-w-xs">{siteLabel}</p>
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-zinc-500 hover:text-zinc-300 p-1 rounded-lg hover:bg-zinc-800 transition-colors cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalHeader
+        icon={<Braces className="w-4 h-4" />}
+        title="Revalidation Payload"
+        subtitle={siteLabel}
+        onClose={onClose}
+      />
 
         <div className="p-5 space-y-4">
           {(error || buildError) && (
@@ -273,7 +259,6 @@ export const RevalidatePayloadModal: React.FC<RevalidatePayloadModalProps> = ({
             </button>
           </div>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 };

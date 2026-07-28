@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { X, Plus, Globe, Key, Building2, Layers, Compass } from 'lucide-react';
+import { Plus, Globe, Key, Building2, Layers, Compass } from 'lucide-react';
+import { Modal, ModalHeader } from './Modal';
 
 interface AddSiteModalProps {
   isOpen: boolean;
@@ -39,8 +40,6 @@ export const AddSiteModal: React.FC<AddSiteModalProps> = ({
       setCompanyName(prefilledCompany);
     }
   }, [prefilledCompany]);
-
-  if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,28 +84,13 @@ export const AddSiteModal: React.FC<AddSiteModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-sm animate-fade-in" onClick={onClose}>
-      <div
-        className="bg-[#09090b] border border-zinc-800 w-full max-w-lg rounded-xl shadow-2xl overflow-hidden flex flex-col"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="p-5 border-b border-zinc-800 flex items-center justify-between bg-zinc-900/50">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
-              <Plus className="w-4 h-4" />
-            </div>
-            <div>
-              <h3 className="text-base font-bold text-white">Add Site Environment</h3>
-              <p className="text-xs text-zinc-400">Register a site node for POST revalidation</p>
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-zinc-500 hover:text-zinc-300 p-1 rounded-lg hover:bg-zinc-800 transition-colors cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalHeader
+        icon={<Plus className="w-4 h-4" />}
+        title="Add Site Environment"
+        subtitle="Register a site node for POST revalidation"
+        onClose={onClose}
+      />
 
         <form onSubmit={handleSubmit} className="p-5 space-y-4" autoComplete="off">
           {errorMsg && (
@@ -118,7 +102,7 @@ export const AddSiteModal: React.FC<AddSiteModalProps> = ({
           <div className="space-y-1.5">
             <label className="text-xs font-semibold text-zinc-300 flex items-center gap-1.5">
               <Building2 className="w-3.5 h-3.5 text-indigo-400" />
-              Company / Brand Name
+              Collection Name
             </label>
             <input
               type="text"
@@ -162,7 +146,7 @@ export const AddSiteModal: React.FC<AddSiteModalProps> = ({
               type="password"
               required
               name="revalidate-secret"
-              autoComplete="new-password"
+              // autoComplete="new-password"
               placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
               value={secret}
               onChange={(e) => setSecret(e.target.value)}
@@ -243,7 +227,6 @@ export const AddSiteModal: React.FC<AddSiteModalProps> = ({
             </button>
           </div>
         </form>
-      </div>
-    </div>
+    </Modal>
   );
 };

@@ -39,7 +39,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="flex items-center gap-3">
           <div className="hidden sm:flex items-center gap-3 text-xs text-zinc-400 bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-1.5 font-mono">
             <div>
-              <span className="text-indigo-400 font-semibold">{totalCompaniesCount}</span> Brands
+              <span className="text-indigo-400 font-semibold">{totalCompaniesCount}</span> Collections
             </div>
             <span className="text-zinc-700">•</span>
             <div>

@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { Lock, ShieldAlert } from 'lucide-react';
+import { Modal } from './Modal';
 
 interface LoginPromptModalProps {
   isOpen: boolean;
@@ -18,8 +19,6 @@ export const LoginPromptModal: React.FC<LoginPromptModalProps> = ({
   const [password, setPassword] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [localError, setLocalError] = useState('');
-
-  if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,8 +40,11 @@ export const LoginPromptModal: React.FC<LoginPromptModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fade-in">
-      <div className="bg-[#09090b] border border-zinc-800 w-full max-w-md rounded-xl shadow-2xl overflow-hidden">
+    <Modal
+      isOpen={isOpen}
+      maxWidth="max-w-md"
+      backdropClassName="bg-black/90 backdrop-blur-md"
+    >
         <div className="p-6 bg-zinc-900/60 border-b border-zinc-800 text-center space-y-3">
           <div className="w-12 h-12 mx-auto rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center">
             <Lock className="w-6 h-6 text-indigo-400" />
@@ -101,7 +103,6 @@ export const LoginPromptModal: React.FC<LoginPromptModalProps> = ({
             <a href="https://github.com/charles-mendoza/">@charles-mendoza</a>
           </p>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 };
